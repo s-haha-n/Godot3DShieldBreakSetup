@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://3kcwk4bx1bhk"]
+
+[ext_resource type="PackedScene" uid="uid://bqwk8ebwwho1s" path="res://scenes/entities/player/player.tscn" id="1_377w7"]
+[ext_resource type="Texture2D" uid="uid://dy5u30pmjvx4t" path="res://graphics/grid/Dark/texture_06.png" id="2_b2cq8"]
+[ext_resource type="Script" uid="uid://rugb64ifm4fr" path="res://playtest_helper.gd" id="2_bovvr"]
+[ext_resource type="Texture2D" uid="uid://x8d2g3byhifq" path="res://graphics/grid/Dark/texture_03.png" id="3_xb4v1"]
+[ext_resource type="PackedScene" uid="uid://vsp4on6788ax" path="res://graphics/shields/geodome_half.tscn" id="5_urvlt"]
+[ext_resource type="Shader" uid="uid://2emw11n1aiu4" path="res://graphics/shields/geodome_half.gdshader" id="6_d4w6o"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_377w7"]
+sky_top_color = Color(0.31157947, 0.6494277, 0.81093997, 1)
+sky_horizon_color = Color(0.7630428, 0.8397548, 0.87113297, 1)
+ground_horizon_color = Color(0.7630428, 0.8397548, 0.87113297, 1)
+
+[sub_resource type="Sky" id="Sky_bovvr"]
+sky_material = SubResource("ProceduralSkyMaterial_377w7")
+
+[sub_resource type="Environment" id="Environment_b2cq8"]
+background_mode = 2
+sky = SubResource("Sky_bovvr")
+tonemap_mode = 2
+ssao_enabled = true
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xb4v1"]
+albedo_texture = ExtResource("2_b2cq8")
+uv1_scale = Vector3(8, 8, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_v5ikv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_urvlt"]
+albedo_texture = ExtResource("3_xb4v1")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_e4i5a"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mbbpy"]
+render_priority = 26
+shader = ExtResource("6_d4w6o")
+shader_parameter/shatter_progress = 0.0
+shader_parameter/explode_dist = 1.30000006175
+shader_parameter/fade_amount = 0.0
+shader_parameter/fresnel_power = 3.0
+shader_parameter/fresnel_noise_amount = 4.0
+shader_parameter/shield_color = Color(0.11695375, 0.98762375, 0.99999994, 1)
+
+[sub_resource type="Curve" id="Curve_54w23"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="Level" type="Node3D" unique_id=388815393]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2098807479]
+transform = Transform3D(-0.98061466, 0.16969445, -0.09797312, 0, 0.49999997, 0.86602545, 0.19594626, 0.84923726, -0.4903073, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1998308489]
+environment = SubResource("Environment_b2cq8")
+
+[node name="Entities" type="Node3D" parent="." unique_id=1414994598]
+
+[node name="Player" parent="Entities" unique_id=92140526 instance=ExtResource("1_377w7")]
+
+[node name="Environment" type="Node3D" parent="." unique_id=1287147511]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Environment" unique_id=1047533895]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment/StaticBody3D" unique_id=1554866958]
+transform = Transform3D(40, 0, 0, 0, 0.5, 0, 0, 0, 40, 0, -0.25, 0)
+material_override = SubResource("StandardMaterial3D_xb4v1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/StaticBody3D" unique_id=1579071730]
+transform = Transform3D(39.999996, 0, 0, 0, 0.5, 0, 0, 0, 39.999996, 0, -0.25, 0)
+shape = SubResource("BoxShape3D_v5ikv")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="Environment" unique_id=287517250]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="Environment/StaticBody3D2" unique_id=1411021352]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 1, 0, 0, -6.01207)
+material_override = SubResource("StandardMaterial3D_urvlt")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/StaticBody3D2" unique_id=1914256255]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 1, 0, 0, -6.01207)
+shape = SubResource("BoxShape3D_e4i5a")
+
+[node name="PlaytestHelper" type="Node" parent="." unique_id=776916097]
+script = ExtResource("2_bovvr")
+
+[node name="geodome_half" parent="." unique_id=59993263 instance=ExtResource("5_urvlt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3220277, -3.9257834)
+
+[node name="GD_mesh" parent="geodome_half" index="0" unique_id=1568216445]
+surface_material_override/0 = SubResource("ShaderMaterial_mbbpy")
+initial_color = Color(0.27277875, 0.5652492, 0.7309035, 1)
+final_color = Color(5.1947293, 0.5309051, 0.22891371, 1)
+explode_curve = SubResource("Curve_54w23")
+test_damage = 20.0
+
+[editable path="geodome_half"]
