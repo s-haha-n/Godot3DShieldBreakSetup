@@ -4,35 +4,18 @@
 [ext_resource type="Shader" uid="uid://2emw11n1aiu4" path="res://graphics/shields/geodome_half.gdshader" id="2_ok5e1"]
 [ext_resource type="Script" uid="uid://blvxp071jw4yu" path="res://graphics/shields/shield_controller.gd" id="3_ok5e1"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_cy06u"]
-render_priority = 26
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6gkuq"]
+render_priority = 0
 shader = ExtResource("2_ok5e1")
-shader_parameter/shatter_progress = 0.0
-shader_parameter/explode_dist = 1.4
+shader_parameter/tumble = 0.0
+shader_parameter/expand = 0.0
 shader_parameter/fade_amount = 0.0
 shader_parameter/fresnel_power = 3.0
 shader_parameter/fresnel_noise_amount = 4.0
-shader_parameter/shield_color = Vector4(0, 0, 0, 0)
-
-[sub_resource type="Curve" id="Curve_ok5e1"]
-_limits = [0.0, 107.97, 0.0, 1.0]
-_data = [Vector2(0, 53.985), 0.0, 0.0, 0, 1, Vector2(1, 53.985), 0.0, 0.0, 1, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_ormnw"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_odn77"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 2
+shader_parameter/shield_color = Color(0.63375676, 0.6337568, 0.63375676, 1)
 
 [node name="geodome_half" unique_id=59993263 instance=ExtResource("1_6gkuq")]
 
-[node name="GD_mesh" parent="." index="0" unique_id=1568216445]
-surface_material_override/0 = SubResource("ShaderMaterial_cy06u")
+[node name="Icosphere" parent="." index="0" unique_id=111620487]
+surface_material_override/0 = SubResource("ShaderMaterial_6gkuq")
 script = ExtResource("3_ok5e1")
-explode_curve = SubResource("Curve_ok5e1")
-fade_curve = SubResource("Curve_ormnw")
-fresnel_curve = SubResource("Curve_odn77")
-test_mode = true

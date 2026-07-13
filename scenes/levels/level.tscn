@@ -4,8 +4,11 @@
 [ext_resource type="Texture2D" uid="uid://dy5u30pmjvx4t" path="res://graphics/grid/Dark/texture_06.png" id="2_b2cq8"]
 [ext_resource type="Script" uid="uid://rugb64ifm4fr" path="res://playtest_helper.gd" id="2_bovvr"]
 [ext_resource type="Texture2D" uid="uid://x8d2g3byhifq" path="res://graphics/grid/Dark/texture_03.png" id="3_xb4v1"]
-[ext_resource type="PackedScene" uid="uid://vsp4on6788ax" path="res://graphics/shields/geodome_half.tscn" id="5_urvlt"]
-[ext_resource type="Shader" uid="uid://2emw11n1aiu4" path="res://graphics/shields/geodome_half.gdshader" id="6_d4w6o"]
+[ext_resource type="PackedScene" uid="uid://bj5avdjxwe671" path="res://ui/value_bar.tscn" id="6_d4w6o"]
+[ext_resource type="PackedScene" uid="uid://cpiykocxvvvv1" path="res://scenes/entities/test_rigidbody_object.tscn" id="8_ouxo3"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mbbpy"]
+bg_color = Color(0.9384586, 0.14692816, 0.40612134, 1)
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_377w7"]
 sky_top_color = Color(0.31157947, 0.6494277, 0.81093997, 1)
@@ -23,6 +26,7 @@ ssao_enabled = true
 glow_enabled = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xb4v1"]
+albedo_color = Color(0.22803146, 0.4006104, 0.4319054, 1)
 albedo_texture = ExtResource("2_b2cq8")
 uv1_scale = Vector3(8, 8, 8)
 
@@ -33,21 +37,27 @@ albedo_texture = ExtResource("3_xb4v1")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_e4i5a"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_mbbpy"]
-render_priority = 26
-shader = ExtResource("6_d4w6o")
-shader_parameter/shatter_progress = 0.0
-shader_parameter/explode_dist = 1.30000006175
-shader_parameter/fade_amount = 0.0
-shader_parameter/fresnel_power = 3.0
-shader_parameter/fresnel_noise_amount = 4.0
-shader_parameter/shield_color = Color(0.11695375, 0.98762375, 0.99999994, 1)
-
-[sub_resource type="Curve" id="Curve_54w23"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 2
-
 [node name="Level" type="Node3D" unique_id=388815393]
+
+[node name="HealthBar" parent="." unique_id=1341806481 instance=ExtResource("6_d4w6o")]
+offset_left = 800.0
+offset_top = 20.0
+offset_right = 1220.0
+offset_bottom = 30.0
+theme_override_styles/fill = SubResource("StyleBoxFlat_mbbpy")
+value = 100.0
+
+[node name="StaminaBar" parent="." unique_id=1345284481 instance=ExtResource("6_d4w6o")]
+offset_left = 800.0
+offset_top = 42.0
+offset_right = 1220.0
+offset_bottom = 52.0
+offset_transform_position = Vector2(-210, 0)
+offset_transform_position_ratio = Vector2(0, 5.135)
+value = 100.0
+
+[node name="PlaytestHelper" type="Node" parent="." unique_id=776916097]
+script = ExtResource("2_bovvr")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2098807479]
 transform = Transform3D(-0.98061466, 0.16969445, -0.09797312, 0, 0.49999997, 0.86602545, 0.19594626, 0.84923726, -0.4903073, 0, 0, 0)
@@ -59,6 +69,9 @@ environment = SubResource("Environment_b2cq8")
 [node name="Entities" type="Node3D" parent="." unique_id=1414994598]
 
 [node name="Player" parent="Entities" unique_id=92140526 instance=ExtResource("1_377w7")]
+base_speed = 5.0
+run_speed = 12.0
+deceleration = 6.5
 
 [node name="Environment" type="Node3D" parent="." unique_id=1287147511]
 
@@ -82,17 +95,40 @@ material_override = SubResource("StandardMaterial3D_urvlt")
 transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 1, 0, 0, -6.01207)
 shape = SubResource("BoxShape3D_e4i5a")
 
-[node name="PlaytestHelper" type="Node" parent="." unique_id=776916097]
-script = ExtResource("2_bovvr")
+[node name="RigidBody3D" parent="." unique_id=1876253959 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.40767, 16.756912)
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)
 
-[node name="geodome_half" parent="." unique_id=59993263 instance=ExtResource("5_urvlt")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3220277, -3.9257834)
+[node name="RigidBody3D2" parent="." unique_id=1070677017 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.40767, 19.669363)
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)
 
-[node name="GD_mesh" parent="geodome_half" index="0" unique_id=1568216445]
-surface_material_override/0 = SubResource("ShaderMaterial_mbbpy")
-initial_color = Color(0.27277875, 0.5652492, 0.7309035, 1)
-final_color = Color(5.1947293, 0.5309051, 0.22891371, 1)
-explode_curve = SubResource("Curve_54w23")
-test_damage = 20.0
+[node name="RigidBody3D3" parent="." unique_id=145448657 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.40767, 23.432457)
+mass = 0.814
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)
 
-[editable path="geodome_half"]
+[node name="RigidBody3D4" parent="." unique_id=256804952 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.40767, 27.091988)
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)
+
+[node name="RigidBody3D5" parent="." unique_id=1966976782 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.40767, 30.421165)
+mass = 0.509
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)
+
+[node name="RigidBody3D7" parent="." unique_id=1812303646 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.4076681, 43.187363)
+mass = 0.814
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)
+
+[node name="RigidBody3D6" parent="." unique_id=971822302 instance=ExtResource("8_ouxo3")]
+transform = Transform3D(-0.6818117, 5.44578e-08, 0.31246254, 0.31246254, -5.0906607e-08, 0.6818117, 7.071516e-08, 0.75, 2.3590266e-08, 1.0284568, 1.40767, 33.963375)
+gravity_scale = 0.0
+linear_velocity = Vector3(0, 0, -8.415)

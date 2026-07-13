@@ -1,5 +1,0 @@
-[gd_scene format=3 uid="uid://ynwp4ns4gq42"]
-
-[ext_resource type="PackedScene" uid="uid://cx1gyp6jqxbou" path="res://xbot_mixamo_animation_libraries/characters/aliensol.glb" id="1_hawqw"]
-
-[node name="aliensol" unique_id=819361271 instance=ExtResource("1_hawqw")]

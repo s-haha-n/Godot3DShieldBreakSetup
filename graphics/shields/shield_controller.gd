@@ -3,6 +3,7 @@ extends MeshInstance3D
 @export var max_health := 100.0
 @export var initial_color := Color(0.55, 0.9, 1.0, 1.0)
 @export var final_color := Color(4.0, 0.35, 0.25, 1.0)
+var initial_alpha := 1.0
 @export var shake_strength := 0.03
 @export var shake_decay := 10.0
 @export var base_fresnel_power := 3.0
@@ -27,6 +28,7 @@ var bursting := false
 
 func _ready() -> void:
 	material = get_active_material(0)
+	initial_alpha = initial_color.a
 	rest_position = position
 	if not explode_curve:
 		explode_curve = Curve.new()
@@ -45,10 +47,11 @@ func _ready() -> void:
 		fresnel_curve.add_point(Vector2(0.3, base_fresnel_power * 2.0))
 		fresnel_curve.add_point(Vector2(1.0, base_fresnel_power * 0.6))
 	update_color()
+	set_alpha(20.0)  # hidden at start
 	material.set_shader_parameter("fresnel_power", base_fresnel_power)
 	if test_mode:
 		run_test_sequence()
-
+		
 func hit(damage: float) -> void:
 	if bursting:
 		return
@@ -57,10 +60,19 @@ func hit(damage: float) -> void:
 	update_color()
 	if health <= 0.0:
 		burst()
+		
 
 func burst() -> void:
 	bursting = true
 	burst_time = 0.0
+	
+	var world_transform = global_transform
+	var tree = get_tree()
+
+	get_parent().remove_child(self)
+	tree.current_scene.add_child(self)
+
+	global_transform = world_transform
 
 func reset() -> void:
 	health = max_health
@@ -71,40 +83,54 @@ func reset() -> void:
 	position = rest_position
 	visible = true
 	update_color()
-	material.set_shader_parameter("shatter_progress", 0.0)
+	material.set_shader_parameter("expand", 0.0)
 	material.set_shader_parameter("fade_amount", 0.0)
 	material.set_shader_parameter("fresnel_power", base_fresnel_power)
+	material.set_shader_parameter("tumble", 0.0)
+
 
 func update_color() -> void:
 	var t := 1.0 - health / max_health
 	material.set_shader_parameter("shield_color", initial_color.lerp(final_color, t))
 
+func set_alpha(a: float) -> void:
+	var c: Color = material.get_shader_parameter("shield_color")
+	c.a = a
+	material.set_shader_parameter("shield_color", c)
+	
+func fade_shield(shown: bool, duration: float = 0.25) -> void:
+	var target = initial_alpha if shown else 0.0
+	var tween := create_tween()
+	tween.tween_method(set_alpha, material.get_shader_parameter("shield_color").a, target, duration)
+
 func _process(delta: float) -> void:
-	if shake_magnitude > 0.0001:
-		position = rest_position + Vector3(
-			randf_range(-1.0, 1.0),
-			randf_range(-1.0, 1.0),
-			randf_range(-1.0, 1.0)
-		) * shake_magnitude
-		shake_magnitude -= shake_magnitude * shake_decay * delta
-	else:
-		position = rest_position
+	if not bursting:
+		if shake_magnitude > 0.0001:
+			position = rest_position + Vector3(
+				randf_range(-1.0, 1.0),
+				randf_range(-1.0, 1.0),
+				randf_range(-1.0, 1.0)
+			) * shake_magnitude
+			shake_magnitude -= shake_magnitude * shake_decay * delta
+		else:
+			position = rest_position
 
 	if bursting:
 		burst_time = min(burst_time + delta, burst_duration)
 		var t := burst_time / burst_duration
 		shatter_progress = explode_curve.sample(t)
 		fade_amount = fade_curve.sample(t)
+		material.set_shader_parameter("tumble", t/17)
 		material.set_shader_parameter("fresnel_power", fresnel_curve.sample(t))
 		if t >= 1.0:
 			visible = false
 
-	material.set_shader_parameter("shatter_progress", shatter_progress)
+	material.set_shader_parameter("expand", shatter_progress)
 	material.set_shader_parameter("fade_amount", fade_amount)
 
 func run_test_sequence() -> void:
 	
-	await get_tree().create_timer(4.0).timeout
+	await get_tree().create_timer(2.0).timeout
 	while true:
 		await get_tree().create_timer(randf_range(test_min_interval, test_max_interval)).timeout
 		hit(test_damage)
